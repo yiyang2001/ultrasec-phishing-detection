@@ -66,7 +66,7 @@ with st.expander("PROJECT DETAILS"):
              'Most of the features extracted using find_all() method of BeautifulSoup module after parsing html.')
 
     st.subheader('Results')
-    st.write('I used 7 different ML classifiers of scikit-learn and tested them implementing k-fold cross validation.'
+    st.write('I used 8 different ML classifiers of scikit-learn and tested them implementing k-fold cross validation.'
              'Firstly obtained their confusion matrices, then calculated their accuracy, precision and recall scores.'
              'Comparison table is below:')
     st.table(ml.df_results)
@@ -83,6 +83,7 @@ with st.expander('EXAMPLE PHISHING URLs:'):
     st.write('_https://rtyu38.godaddysites.com/_')
     st.write('_https://karafuru.invite-mint.com/_')
     st.write('_https://defi-ned.top/h5/#/_')
+    st.write('_https://beeflash.net/_')
     st.caption('REMEMBER, PHISHING WEB PAGES HAVE SHORT LIFECYCLE! SO, THE EXAMPLES SHOULD BE UPDATED!')
 
 choice = st.selectbox("Please select your machine learning model",
@@ -126,13 +127,15 @@ if st.button('Check!'):
     try:
         valid=validators.url(url)
         if valid==True:
-            st.success("Url is valid")
+            st.success("Url Format is valid")
         else:
             st.warning("Invalid url")
         response = re.get(url, verify=False, timeout=4)
-        if response.status_code != 200:
+        if response.status_code == 404:
+            st.warning("404 Client Error. HTTP connection was not successful for the URL: "+url)
+        elif response.status_code != 200:
             print(". HTTP connection was not successful for the URL: ", url)
-            st.warning("Attention! This web page is a potential PHISHING! HTTP connection was not successful for the URL: ", url)
+            st.warning("Attention! This web page is a potential PHISHING! HTTP connection was not successful for the URL: "+url)
         else:
             soup = BeautifulSoup(response.content, "html.parser")
             vector = [fe.create_vector(soup)]  # it should be 2d array, so I added []
@@ -146,7 +149,10 @@ if st.button('Check!'):
 
     except re.exceptions.RequestException as e:
         print("--> ", e)
-        st.warning(e)
+        st.warning(self.e,icon=None)
+        
+    # except re.exceptions.HTTPError as err:
+    #     raise SystemExit(err)
 
 
 
