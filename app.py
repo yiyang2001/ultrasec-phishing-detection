@@ -12,12 +12,9 @@ from sklearn.ensemble import RandomForestClassifier
 import shutil
 from st_aggrid import AgGrid
 
-# col1, col2 = st.columns([1, 3])
-# st.sidebar.title("UltraSec Phishing Detector")
-# 1. as sidebar menu
 with st.sidebar:
-    selected = option_menu("Navigation Menu", ["Home", 'Phishing Prediction','Project Details','Example',
-    'Model Test Result','Data Set','Setting','Extension Download'], 
+    selected = option_menu("Navigation Menu", ['UltraSec Phishing Detection','Phishing Prediction','Phishing Prediction By Upload CSV File','Project Details','Example',
+    'Model Test Result','Data Set','Extension Download'], 
         icons=['house','caret-right','book','list-task','bar-chart-line','caret-right','caret-right','download'], menu_icon="cast", default_index=1)
 if selected == "Home":
     st.title('Phishing Detection')
@@ -234,7 +231,116 @@ if selected == "Phishing Prediction":
         st.success('Done!')
         st.dataframe(result_concat)
         # AgGrid(result_concat)
-        
+if selected == "Phishing Prediction By Upload CSV File":
+    st.header('Phishing Prediction By Upload CSV File')
+    def evaluate_csv(url):
+        try: 
+            valid=validators.url(url)
+            if valid==True:
+                # st.success("Url Format is valid")
+                dataframe['URL Validity'] = 'Valid'
+            else:
+                # st.warning("Invalid url")
+                dataframe['URL Format Validity'] = 'Invalid'
+            response = re.get(url, verify=False, timeout=4)
+            if response.status_code == 404:
+                # st.warning("404 Client Error. HTTP connection was not successful for the URL: "+url)
+                dataframe['Response'] = '404 Error'
+            elif response.status_code != 200:
+                # print(". HTTP connection was not successful for the URL: ", url)
+                # st.warning("Attention! This web page is a potential PHISHING! HTTP connection was not successful for the URL: "+url)
+                dataframe['Response'] = 'HTTP Connection was not successful'
+            else:
+                soup = BeautifulSoup(response.content, "html.parser")
+                vector = [fe.create_vector(soup)]  # it should be 2d array, so I added []
+                result = model.predict(vector)
+                if result[0] == 0:
+                    # st.success("This web page seems a legitimate!")
+                    # st.balloons()
+                    dataframe['Response'] = 'Legitimate'
+                else:
+                    # st.warning("Attention! This web page is a potential PHISHING!")
+                    # st.snow()
+                    dataframe['Response'] = 'Phishing'
+            dataframe['Error'] = ''
+            st.write(num)
+        except re.exceptions.RequestException as e:
+            print("--> ", e)
+            # st.error(e,icon=None)  
+            dataframe['Error'] = e
+
+    # if "points_1" not in st.session_state:
+    #     # points for guesses
+    #     st.session_state.points_1 = 0
+
+    @st.cache
+    def convert_df(df):
+        # IMPORTANT: Cache the conversion to prevent computation on every rerun
+        return df.to_csv().encode('utf-8')
+
+    
+    uploaded_file = st.file_uploader("Choose a file")
+    if uploaded_file is not None:
+        # Can be used wherever a "file-like" object is accepted:
+        chunk = pd.read_csv(uploaded_file,chunksize=1000)
+        dataframe = pd.concat(chunk)
+        st.write(dataframe)      
+
+        choice = st.selectbox("Please select your machine learning model",
+                [
+                    'Logistic Regression','Gaussian Naive Bayes', 'Support Vector Machine', 'Decision Tree', 'Random Forest',
+                    'AdaBoost', 'Neural Network', 'K-Neighbours'
+                ]
+                )
+        model = ml.nb_model
+        if choice == 'Logistic Regression':
+            model = ml.lr_model
+            st.write('LR model is selected!')
+        elif choice == 'Gaussian Naive Bayes':
+            model = ml.nb_model
+            st.write('GNB model is selected!')
+        elif choice == 'Support Vector Machine':
+            model = ml.svm_model
+            st.write('SVM model is selected!')
+        elif choice == 'Decision Tree':
+            model = ml.dt_model
+            st.write('DT model is selected!')
+        elif choice == 'Random Forest':
+            model = ml.rf_model
+            st.write('RF model is selected!')
+        elif choice == 'AdaBoost':
+            model = ml.ab_model
+            st.write('AB model is selected!')
+        elif choice == 'Neural Network':
+            model = ml.nn_model
+            st.write('NN model is selected!')
+        else:
+            model = ml.kn_model
+            st.write('KN model is selected!')
+
+        if len(dataframe) <51 :
+            # check the url is valid or not
+            if st.button('Check!'):
+                if uploaded_file is not None:
+                    my_bar = st.progress(0)
+                    with st.spinner('Wait for it...'):
+                        dataframe.apply(lambda row : evaluate_csv(row['url']),axis=1)
+                        AgGrid(dataframe)
+                    my_bar.progress(100)
+                    st.success('Done!')   
+                    csv = convert_df(dataframe)
+                    st.download_button(
+                        label="Download Prediction (CSV)",
+                        data=csv,
+                        file_name='Download Result(CSV).csv',
+                        mime='text/csv',
+                        help='Download Prediction Result in CSV format '
+                    )
+        else:
+            st.write('Maximum of 50 rows of Urls are accepted. PLEASE ReUpload')
+  
+    
+
 if selected == "Project Details":
     # with st.expander("PROJECT DETAILS"):
     st.subheader('Approach')
@@ -308,41 +414,12 @@ if selected == "Data Set":
         data = pd.read_csv('malicious_phish.csv', nrows=nrows)
         return data
     # st.text_input(label, value="", max_chars=None, key=None, type="default", help=None, autocomplete=None, on_change=None, args=None, kwargs=None, *, placeholder=None, disabled=False, label_visibility="visible")
-    # weekly_data = load_data(1000)
+    phish_data = load_data(1000)
     # st.write(weekly_data)
     # st.subheader('Weekly Demand Data')
-    # st.write(weekly_data)
+    AgGrid(phish_data)
     # #Bar Chart
     # st.bar_chart(weekly_data)
-    st.sidebar.header('User Input Parameters')
-    def user_input_features():
-        sepal_length = st.sidebar.slider('Sepal length', 4.3, 7.9, 5.4)
-        sepal_width = st.sidebar.slider('Sepal width', 2.0, 4.4, 3.4)
-        petal_length = st.sidebar.slider('Petal length', 1.0, 6.9, 1.3)
-        petal_width = st.sidebar.slider('Petal width', 0.1, 2.5, 0.2)
-        data = {'sepal_length': sepal_length,
-                'sepal_width': sepal_width,
-                'petal_length': petal_length,
-                'petal_width': petal_width}
-        features = pd.DataFrame(data, index=[0])
-        return features
-    df = user_input_features()
-    st.subheader('User Input parameters')
-    st.write(df)
-    iris = datasets.load_iris()
-    X = iris.data
-    Y = iris.target
-    clf = RandomForestClassifier()
-    clf.fit(X, Y)
-    prediction = clf.predict(df)
-    prediction_proba = clf.predict_proba(df)
-    st.subheader('Class labels and their corresponding index number')
-    st.write(iris.target_names)
-    st.subheader('Prediction')
-    st.write(iris.target_names[prediction])
-    #st.write(prediction)
-    st.subheader('Prediction Probability')
-    st.write(prediction_proba)
 if selected == "Extension Download":
     st.title('Download Page')
     st.subheader('Download the latest version Ultrasec Phishing Detector')

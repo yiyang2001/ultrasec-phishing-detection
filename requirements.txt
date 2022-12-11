@@ -1,12 +1,10 @@
-arff==0.9
 beautifulsoup4==4.11.1
 matplotlib==3.5.1
 numpy==1.21.5
 pandas==1.5.2
 requests==2.25.1
 scikit_learn==1.2.0
-streamlit==1.15.1
+streamlit==1.14.0
 streamlit_option_menu==0.3.2
 streamlit_aggrid==0.3.3
-urllib3==1.26.9
 validators==0.20.0
