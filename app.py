@@ -263,7 +263,6 @@ if selected == "Phishing Prediction By Upload CSV File":
                     # st.snow()
                     dataframe['Response'] = 'Phishing'
             dataframe['Error'] = ''
-            st.write(num)
         except re.exceptions.RequestException as e:
             print("--> ", e)
             # st.error(e,icon=None)  
