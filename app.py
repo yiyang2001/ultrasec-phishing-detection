@@ -16,7 +16,7 @@ with st.sidebar:
     selected = option_menu("Navigation Menu", ['UltraSec Phishing Detection','Phishing Prediction','Phishing Prediction By Upload CSV File','Project Details','Example',
     'Model Test Result','Data Set','Extension Download'], 
         icons=['house','caret-right','book','list-task','bar-chart-line','caret-right','caret-right','download'], menu_icon="cast", default_index=1)
-if selected == "Home":
+if selected == "UltraSec Phishing Detection":
     st.title('Phishing Detection')
     # st.write('This ML-based app is developed for educational purposes. Objective of the app is detecting phishing websites only using content data. Not URL!'
     #          ' You can see the details of approach, data set, and feature set if you click on _"See The Details"_. ')
