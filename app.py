@@ -23,7 +23,7 @@ import base64
 
 with st.sidebar:
     selected = option_menu("Navigation Menu", ['UltraSec Phishing Detection','Phishing Prediction','Phishing Prediction By Upload CSV File','Project Details','Example',
-    'Model Test Result','Data Set','Extension Download','Training Process'], 
+    'Model Test Result','Data Set','Extension Download','Evil Twin Detector Download'], 
         icons=['house','caret-right','book','list-task','bar-chart-line','caret-right','caret-right','download'], menu_icon="cast", default_index=0)
 if selected == "UltraSec Phishing Detection":
     st.title('Phishing Detection')
