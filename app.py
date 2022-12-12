@@ -11,10 +11,19 @@ from sklearn import datasets
 from sklearn.ensemble import RandomForestClassifier
 import shutil
 from st_aggrid import AgGrid
+import streamlit.components.v1 as components
+import base64
+
+
+# 2. horizontal menu
+# selected2 = option_menu(None, ["Home", "Upload", "Tasks", 'Settings'], 
+#     icons=['house', 'cloud-upload', "list-task", 'gear'], 
+#     menu_icon="cast", default_index=0, orientation="horizontal")
+# selected2
 
 with st.sidebar:
     selected = option_menu("Navigation Menu", ['UltraSec Phishing Detection','Phishing Prediction','Phishing Prediction By Upload CSV File','Project Details','Example',
-    'Model Test Result','Data Set','Extension Download'], 
+    'Model Test Result','Data Set','Extension Download','Training Process'], 
         icons=['house','caret-right','book','list-task','bar-chart-line','caret-right','caret-right','download'], menu_icon="cast", default_index=0)
 if selected == "UltraSec Phishing Detection":
     st.title('Phishing Detection')
@@ -337,9 +346,6 @@ if selected == "Phishing Prediction By Upload CSV File":
                     )
         else:
             st.write('Maximum of 50 rows of Urls are accepted. PLEASE ReUpload')
-  
-    
-
 if selected == "Project Details":
     # with st.expander("PROJECT DETAILS"):
     st.subheader('Approach')
@@ -416,7 +422,10 @@ if selected == "Data Set":
     phish_data = load_data(1000)
     # st.write(weekly_data)
     # st.subheader('Weekly Demand Data')
-    AgGrid(phish_data)
+    # AgGrid(phish_data)
+
+    number = st.slider("Select row number to display", 50, 500)
+    st.dataframe(phish_data.head(number))
     # #Bar Chart
     # st.bar_chart(weekly_data)
 if selected == "Extension Download":
@@ -466,3 +475,21 @@ if selected == "Extension Download":
     video_file = open('install_extension.mp4', 'rb')
     video_bytes = video_file.read()
     st.video(video_bytes)
+if selected == 'Evil Twin Detector Download':
+    # embed streamlit docs in a streamlit app
+    # components.iframe("https://docs.streamlit.io/en/latest")
+    # components.html("""
+    
+    # """)
+    
+    # def show_pdf(file_path):
+    #     with open(file_path,"rb") as f:
+    #         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+    #     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="800" height="800" type="application/pdf"></iframe>'
+    #     st.markdown(pdf_display, unsafe_allow_html=True)
+
+    # show_pdf('training.pdf')
+
+    st.header('Evil Twin Detector Download')
+    st.caption('An evil twin attack takes place when an attacker sets up a fake Wi-Fi access point hoping that users will connect to it instead of a legitimate one. When users connect to this access point, all the data they share with the network passes through a server controlled by the attacker. An attacker can create an evil twin with a smartphone or other internet-capable device and some readily available software. Evil twin attacks are more common on public Wi-Fi networks which are unsecured and leave your personal data vulnerable.')
+    st.markdown('[**Download Evin Twin Detector**](https://github.com/ryanlee13288/EvilTwinDetectFYP)')
