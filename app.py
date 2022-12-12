@@ -24,7 +24,7 @@ import base64
 with st.sidebar:
     selected = option_menu("Navigation Menu", ['UltraSec Phishing Detection','Phishing Prediction','Phishing Prediction By Upload CSV File','Project Details','Example',
     'Model Test Result','Data Set','Extension Download','Evil Twin Detector Download'], 
-        icons=['house','caret-right','book','list-task','bar-chart-line','caret-right','caret-right','download'], menu_icon="cast", default_index=0)
+        icons=['house','caret-right','book','list-task','bar-chart-line','caret-right','caret-right','download','download'], menu_icon="cast", default_index=0)
 if selected == "UltraSec Phishing Detection":
     st.title('Phishing Detection')
     # st.write('This ML-based app is developed for educational purposes. Objective of the app is detecting phishing websites only using content data. Not URL!'
